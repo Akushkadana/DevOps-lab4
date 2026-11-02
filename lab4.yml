@@ -1,0 +1,49 @@
+---
+- name: Лабораторная работа 4
+  hosts: lab
+  become: true
+  tasks:
+    # 1. Установка пакетов
+    - name: Установить htop и tree
+      ansible.builtin.apt:
+        name:
+          - htop
+          - tree
+        state: present
+        update_cache: true
+
+    # 2. Пользователь
+    - name: Создать пользователя devuser
+      ansible.builtin.user:
+        name: devuser
+        shell: /bin/bash
+        state: present
+
+    # 3. Каталог
+    - name: Создать каталог /opt/lab4
+      ansible.builtin.file:
+        path: /opt/lab4
+        state: directory
+        owner: devuser
+        mode: "0755"
+
+    # Вспомогательное: каталог для задания 4
+    - name: Создать каталог /opt/lab1
+      ansible.builtin.file:
+        path: /opt/lab1
+        state: directory
+        mode: "0755"
+
+    # 4. Файл с текстом
+    - name: Создать файл info.txt
+      ansible.builtin.copy:
+        dest: /opt/lab1/info.txt
+        content: "Выполнила: Маликова Айдана\n"
+        mode: "0644"
+
+    # 5. Служба
+    - name: Запустить cron и включить автозагрузку
+      ansible.builtin.service:
+        name: cron
+        state: started
+        enabled: true
